@@ -1,0 +1,75 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/movie_detail"
+    style="?android:attr/textAppearanceLarge"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="br.com.brolam.popularmovies.MovieDetailFragment"
+    android:paddingLeft="@dimen/horizontal_margin"
+    android:paddingRight="@dimen/horizontal_margin"
+    android:paddingTop="@dimen/text_margin"
+    android:paddingBottom="@dimen/text_margin">
+
+
+    <ImageView
+        android:layout_width="140dp"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        app:srcCompat="@mipmap/ic_launcher"
+        android:scaleType="fitXY"
+        android:id="@+id/imageView"
+        />
+
+    <TextView
+        android:id="@+id/textViewReleaseDateYear"
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
+        style="@style/TextBig"/>
+
+    <TextView
+        android:id="@+id/textViewReleaseDateDayMonth"
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textViewReleaseDateYear"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="8dp"
+        style="@style/TextSmall"/>
+
+
+    <TextView
+        android:id="@+id/textViewOriginalTitle"
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView"
+        android:layout_marginTop="16dp"
+        style="@style/TextNormal"/>
+
+    <TextView
+        android:id="@+id/textViewOverview"
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/textViewOriginalTitle"
+        android:layout_marginTop="8dp" />
+
+    <RatingBar
+        android:id="@+id/ratingBarVoteAverage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        android:numStars="5"
+        android:layout_alignBottom="@+id/imageView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="14dp"
+        style="@style/Widget.AppCompat.RatingBar.Indicator"/>
+
+
+</RelativeLayout>

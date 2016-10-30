@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/movie_detail"
+    style="?android:attr/textAppearanceLarge"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="br.com.brolam.popularmovies.MovieDetailFragment"
+    android:paddingLeft="@dimen/horizontal_margin"
+    android:paddingRight="@dimen/horizontal_margin"
+    android:paddingTop="@dimen/text_margin"
+    android:paddingBottom="@dimen/text_margin">
+
+    <TextView
+        android:id="@+id/textViewErrorMessage"
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/error_message"
+        android:layout_gravity="center_vertical"
+        android:textAlignment="center"
+    />
+
+</LinearLayout>

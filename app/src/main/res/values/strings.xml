@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="title_movie_detail">Movie Detail</string>
+    <string name="error_message_unable_detail_movie">Unable to retrieve the details of the movie,</string>
+    <string name="error_could_not_display_movie_detail">Could not display the detail of the movie.</string>
+    <string name="error_connection_to_internet">Please check the connection to the internet</string>
+    <string name="error_api_themoviedb_not_define">You must define a key in https://www.themoviedb.org/</string>
+</resources>

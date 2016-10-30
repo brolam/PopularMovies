@@ -1,0 +1,7 @@
+<resources>
+    <!--
+     Por favor, solicite um chave para acessar a API do THE MOVIEDB em https://www.themoviedb.org,
+     e também atualizar a string api_themoviedb com a nova chave:
+    -->
+    <string name="api_themoviedb"></string>
+</resources>
