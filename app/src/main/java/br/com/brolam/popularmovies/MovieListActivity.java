@@ -9,6 +9,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -85,6 +87,14 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+
     /**
      * Quando um filme for selecionado {@see MoviesAdapter.IMoviesAdapter}
      * @param movie
@@ -112,6 +122,20 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            this.startActivityForResult(intent, 0);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 
     private void showSwipeRefreshLayout(boolean show) {
         if (this.swipeRefreshLayout != null) {
@@ -135,6 +159,14 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
         }
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if ( resultCode == RESULT_OK ){
+            onRefresh();
+        }
+    }
+
     /**
      * Constrói uma nova linha de execução para acionar o {@see TheMovieDb.getMovies} e recuperar
      * uma pagina com os filmes
@@ -150,7 +182,8 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
         @Override
         protected MoviePage doInBackground(Void... voids) {
             int numPage = moviePage.getPage() == 0 ? 1 : moviePage.getPage();
-            return TheMovieDb.getMovies(MovieListActivity.this, TheMovieDb.Order.POPULAR, numPage);
+            TheMovieDb.Order order = SettingsActivity.getTheMovieDbApiOrderValue(MovieListActivity.this);
+            return TheMovieDb.getMovies(MovieListActivity.this, order , numPage);
         }
 
         @Override

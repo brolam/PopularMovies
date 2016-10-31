@@ -5,4 +5,20 @@
     <string name="error_could_not_display_movie_detail">Could not display the detail of the movie.</string>
     <string name="error_connection_to_internet">Please check the connection to the internet</string>
     <string name="error_api_themoviedb_not_define">You must define a key in https://www.themoviedb.org/</string>
+    <string name="title_activity_settings">Settings</string>
+
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+
+    <string name="action_settings">Settings</string>
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_list_themoviedb_api_order_title">Movies order</string>
+    <string name="pref_list_themoviedb_api_order_popular_title">Order by Popular</string>
+    <string name="pref_list_themoviedb_api_order_top_rated_title">Order by Top Rated</string>
+
+
+
 </resources>

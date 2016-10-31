@@ -8,8 +8,7 @@ import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
 /**
- * A MovieDetailActivity exibe o detalhe do filme somente para Smartphone,
- * para table o detalhe será exibio no {@link MovieListActivity} em um painel.
+ * A MovieDetailActivity exibe o detalhe do filme somente para telas até 820dp.
  * @see MovieListActivity
  * @see MovieDetailFragment
  * @author Breno Marques

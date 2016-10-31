@@ -12,6 +12,7 @@ import br.com.brolam.popularmovies.R;
  */
 public class TheMovieDb {
     private static final String  DEBUG_TAG = "TheMovieDb:";
+    public static final Order DEFAULT_ORDER = Order.popular;
 
     //Texto com parâmentros para construir a URL dos web métodos:
     //Parâmetro 1 - informar a ordem dos filmes {@see Order}
@@ -23,14 +24,14 @@ public class TheMovieDb {
      * informa as possíveis ordem dos filmes definidas na api do TheMovieDb.
      */
     public enum Order {
-        POPULAR,
-        TOP_RATED;
-        @Override
-        public String toString() {
-            if ( this.equals(POPULAR) ) {
-                return "popular";
+        popular,
+        top_rated;
+
+        public String getTitle(Context context){
+            if ( this.equals(top_rated) ) {
+                return context.getString(R.string.pref_list_themoviedb_api_order_top_rated_title);
             } else {
-                return "top_rated";
+                return context.getString(R.string.pref_list_themoviedb_api_order_popular_title);
             }
         }
     }
@@ -43,6 +44,9 @@ public class TheMovieDb {
      * @return retorna a um {@see MoviePage}
      */
     public static MoviePage getMovies(Context context, Order order, int page )  {
+
+
+
         String key = context.getString(R.string.api_themoviedb);
         String jsonString = null;
         try {
@@ -58,4 +62,6 @@ public class TheMovieDb {
         }
 
     }
+
+
 }

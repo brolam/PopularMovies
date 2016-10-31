@@ -30,6 +30,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="br.com.brolam.popularmovies.MovieListActivity" />
         </activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"></activity>
     </application>
 
 </manifest>

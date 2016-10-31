@@ -18,7 +18,7 @@ import java.util.Locale;
 
 
 /**
- * A MovieHelper implementa funcionalidades para faciltar o acesso a Web API, formatação, conversão e etc.
+ * A MovieHelper disponibiliza funcionalidades para faciltar o acesso a Web API, formatação, conversão e etc.
  * É uma class que formece recursos e facilidades gerais para o aplicativo.
  * @see com.squareup.picasso.Picasso
  * @see org.themoviedb.api.v3
