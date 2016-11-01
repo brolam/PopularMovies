@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import org.themoviedb.api.v3.schemes.Movie;
+
+import java.util.ArrayList;
+
 import br.com.brolam.popularmovies.MovieHelper;
 import br.com.brolam.popularmovies.R;
 
@@ -13,32 +16,46 @@ import br.com.brolam.popularmovies.R;
  * Adaptador da lista de filmes.
  * @author Breno Marques
  * @version 1.00
- * @since Release 01
+ * @since Release 02
+ * Udacity Review
+ * SUGGESTION
+ * Não é uma boa prática "armazenar" um objeto/entidade no ViewHolder. A proposta do view holder é
+ *justamente manter apenas os dados/informações que são relevantes aos componentes de tela, ok?
+
  */
 public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
 
-
     /**
-     * Interface para definir o evento on click de um item na lista de filmes.
+     * Interface para definir o evento on click de um item na lista de filmes e
+     * quando o usuário acessa o final da lista de filmes.
      */
     public interface  IMoviesAdapter{
+        /**
+         * Quando um filme for selecionado.
+         * @param movie filme selecionado.
+         */
         void onMovieClick(Movie movie);
+
+        /**
+         * Quando o ultimo filme for exibido.
+         */
+        void onEndOfMovies();
     }
 
     IMoviesAdapter iMoviesAdapter;
-    private Movie[] movies;
+    private ArrayList<Movie> movies;
 
     public MoviesAdapter(IMoviesAdapter iMoviesAdapter) {
         this.iMoviesAdapter = iMoviesAdapter;
-        this.movies = new Movie[]{};
+        this.movies = new ArrayList<>();
     }
 
-    public void update(Movie[] movies){
+    public void update(ArrayList<Movie> movies){
         this.movies = movies;
         this.notifyDataSetChanged();
     }
 
-    public Movie[] getMovies() {
+    public ArrayList<Movie> getMovies() {
         return movies;
     }
 
@@ -51,18 +68,43 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.setMovie(movies[position]);
+
+        holder.setPosition(position);
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               iMoviesAdapter.onMovieClick(holder.movie);
+                iMoviesAdapter.onMovieClick(getMovie(holder.position));
             }
         });
+
+        if (movies.size() == (position + 1)) {
+            this.iMoviesAdapter.onEndOfMovies();
+        }
     }
 
     @Override
     public int getItemCount() {
-        return movies.length;
+        /**
+         * Udacity Review
+         * SUGGESTION
+         * Você consegue garantir que movies nunca será null?
+         * Se não consegue garantir, te sugiro a seguinte implementação para o método em questão:
+         */
+        if (movies != null) {
+            return movies.size();
+        }
+        return 0;
+
+
+    }
+
+    /**
+     * Recupera um filme da lista de filmes
+     * @param position informar uma posição válida.
+     * @return nulo se a posição for inválida.
+     */
+    public Movie getMovie(int position ){
+        return  (( movies !=null ) && ( movies.size() > position))? movies.get(position) : null;
     }
 
     /**
@@ -70,21 +112,21 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder
      */
     public class ViewHolder extends RecyclerView.ViewHolder {
         public ImageView  imageView;
-        public Movie movie;
+        public int position;
 
         public ViewHolder(ImageView imageView) {
             super(imageView);
             this.imageView = imageView;
         }
 
-        public void setMovie(Movie movie) {
-            this.movie = movie;
-            MovieHelper.requestImage(this.movie.getPosterPath(), imageView);
-        }
-
-        @Override
-        public String toString() {
-            return movie.getOriginalTitle();
+        public void setPosition(int position) {
+            this.position = position;
+            Movie movie = getMovie(position);
+            if(movie != null ) {
+                MovieHelper.requestImage(movie.getPosterPath(), imageView);
+            } else {
+                imageView.setImageDrawable(null);
+            }
         }
     }
 }

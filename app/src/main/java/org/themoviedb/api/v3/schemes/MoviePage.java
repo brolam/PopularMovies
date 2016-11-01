@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 
 /**
  * Representa um página recuperado na api do TheMovieDd, veja https://developers.themoviedb.org/3/movies.
@@ -15,16 +17,27 @@ public class MoviePage {
     private static final String PAGE = "page";
     private static final String RESULTS = "results";
 
-    int page;
-    Movie[] movies;
+    /**
+     * informa a pádina atual.
+     */
+    int currentPage;
+    /**
+     * Informa todos os filmes retornado na página um até a
+     * página atual.
+     */
+    ArrayList<Movie> movies;
+
+    /**
+     * Informa o erro ocorrido ao tentar recuperar uma página.
+     */
     Exception exception;
 
     /**
      * Construtor padrão.
      */
     public MoviePage(){
-        this.page = 0;
-        this.movies = new Movie[]{};
+        this.currentPage = 0;
+        this.movies = new ArrayList<>();
         this.exception = null;
     }
 
@@ -34,14 +47,14 @@ public class MoviePage {
      * @throws JSONException
      */
     public MoviePage(String jsonString) throws JSONException {
+        this();
         JSONObject jsonPage = new JSONObject(jsonString);
         JSONArray jsonArrayMovies = jsonPage.getJSONArray(RESULTS);
-        this.page = jsonPage.getInt(PAGE);
-        this.movies = new Movie[jsonArrayMovies.length()];
+        this.currentPage = jsonPage.getInt(PAGE);
         for( int index = 0; index < jsonArrayMovies.length(); index++){
             JSONObject jsonMovie = jsonArrayMovies.getJSONObject(index);
             Movie movie = new Movie(jsonMovie);
-            this.movies[index] = movie;
+            this.movies.add(movie);
 
         }
         //Se o MoviePage for instaciado com sucesso!
@@ -69,16 +82,16 @@ public class MoviePage {
         for (Movie movie : getMovies()) {
             jsonArrayMovies.put(new JSONObject(movie.getJsonString()));
         }
-        jsonPage.put(PAGE, getPage());
+        jsonPage.put(PAGE, getCurrentPage());
         jsonPage.put(RESULTS, jsonArrayMovies);
         return jsonPage;
     }
 
-    public int getPage() {
-        return page;
+    public int getCurrentPage() {
+        return currentPage;
     }
 
-    public Movie[] getMovies() {
+    public ArrayList<Movie> getMovies() {
         return movies;
     }
 
@@ -88,5 +101,10 @@ public class MoviePage {
 
     public boolean isException(){
         return this.exception != null;
+    }
+
+    public void addMovies(int currentPag, ArrayList<Movie> movies){
+        this.currentPage = currentPag;
+        this.movies.addAll(movies);
     }
 }

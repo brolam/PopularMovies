@@ -18,6 +18,8 @@ import org.themoviedb.api.v3.TheMovieDb;
 import org.themoviedb.api.v3.schemes.Movie;
 import org.themoviedb.api.v3.schemes.MoviePage;
 
+import java.util.ArrayList;
+
 import br.com.brolam.popularmovies.adapters.MoviesAdapter;
 
 /**
@@ -81,7 +83,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
         // através do {@link loadSavedInstanceState } ou se o usuário solicitar a atualização online através
         // do {@link swipeRefreshLayout}
         this.swipeRefreshLayout.setOnRefreshListener(this);
-        if ( this.moviePage.getPage() == 0){
+        if ( this.moviePage.getCurrentPage() == 0){
             onRefresh();
         }
     }
@@ -123,6 +125,11 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
     }
 
     @Override
+    public void onEndOfMovies() {
+        newPage(moviePage.getCurrentPage());
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
         int id = item.getItemId();
@@ -144,7 +151,19 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
     }
 
     @Override
+    /**
+     * Atualiza somente a primeira página.
+     */
     public void onRefresh() {
+        newPage(0);
+    }
+
+
+    /**
+     * Solicita uma nova página.
+     * @param currentPage informar a página atual ou zero para recuperar a primeira página.
+     */
+    public void newPage(int currentPage) {
         if ( MovieHelper.checkConnection(this) == false ) {
             showSwipeRefreshLayout(false);
             Toast.makeText(this, getText(R.string.error_connection_to_internet), Toast.LENGTH_LONG).show();
@@ -154,7 +173,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
         //Somente executa a atualização online dos filmes se o asyncTaskMovies não estiver
         //em execução.
         if ( ( asyncTaskMovies == null ) || ( asyncTaskMovies.getStatus() != AsyncTask.Status.RUNNING)) {
-            AsyncTaskMovies asyncTaskMovies = new AsyncTaskMovies();
+            AsyncTaskMovies asyncTaskMovies = new AsyncTaskMovies(currentPage);
             asyncTaskMovies.execute();
         }
     }
@@ -172,6 +191,11 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
      * uma pagina com os filmes
      */
     public class AsyncTaskMovies extends AsyncTask<Void,Void,MoviePage>{
+        int currentPage;
+
+        public AsyncTaskMovies(int currentPage){
+            this.currentPage = currentPage;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -181,9 +205,8 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
 
         @Override
         protected MoviePage doInBackground(Void... voids) {
-            int numPage = moviePage.getPage() == 0 ? 1 : moviePage.getPage();
             TheMovieDb.Order order = SettingsActivity.getTheMovieDbApiOrderValue(MovieListActivity.this);
-            return TheMovieDb.getMovies(MovieListActivity.this, order , numPage);
+            return TheMovieDb.getMovies(MovieListActivity.this, order , currentPage + 1);
         }
 
         @Override
@@ -192,11 +215,20 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
             showSwipeRefreshLayout(false);
 
             if ( moviePage.isException() == false ) {
-                MovieListActivity.this.moviePage = moviePage;
-                Movie[] movies = MovieListActivity.this.moviePage.getMovies();
+
+                //Depois da segunda página os filmes serão adicionados a lista de filmes.
+                if ( moviePage.getCurrentPage() == 1 ) {
+                    MovieListActivity.this.moviePage = moviePage;
+                } else {
+                    MovieListActivity.this.moviePage.addMovies(moviePage.getCurrentPage(), moviePage.getMovies());
+                }
+
+                ArrayList<Movie> movies = MovieListActivity.this.moviePage.getMovies();
                 MovieListActivity.this.moviesAdapter.update(movies);
-                if ( MovieHelper.isTwoPane(MovieListActivity.this) && (movies.length > 0)) {
-                    onMovieClick(movies[0]);
+                //Se o painel do detalhes estiver disponível, o código abaixo
+                //vai tentar exibir o detalhe do ultimo filme selecionado.
+                if ( MovieHelper.isTwoPane(MovieListActivity.this) && (movies.size() > 0)) {
+                    onMovieClick(movies.get(0));
                 }
             } else {
                 Toast.makeText(MovieListActivity.this, moviePage.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -225,8 +257,8 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
                 if ( savedInstanceState.containsKey(MovieDetailFragment.MOVIE_JSON_STRING) ){
                     String jsonMovieString = savedInstanceState.getString(MovieDetailFragment.MOVIE_JSON_STRING);
                     movie = new Movie(new JSONObject(jsonMovieString));
-                } else if ( this.moviePage.getMovies().length > 0 ){
-                    movie = this.moviePage.getMovies()[0];
+                } else if ( this.moviePage.getMovies().size() > 0 ){
+                    movie = this.moviePage.getMovies().get(0);
                 }
 
                 //O codigo abaixo vai atualizar o segundo painel com o detalhe do filme
@@ -253,7 +285,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         try {
-            if (moviePage.getPage() > 0) {
+            if (moviePage.getCurrentPage() > 0) {
                 outState.putString(SAVE_STATE_PAGE_JSON, moviePage.getJsonObject().toString());
                 if (lastMovieSelected != null) {
                     outState.putString(MovieDetailFragment.MOVIE_JSON_STRING, lastMovieSelected.getJsonString());

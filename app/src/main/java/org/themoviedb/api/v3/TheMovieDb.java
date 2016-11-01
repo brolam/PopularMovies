@@ -41,12 +41,9 @@ public class TheMovieDb {
      * @param context informar um contexto válido.
      * @param order informar uma ordem válida {@see Order}
      * @param page informar uma página maior que zero.
-     * @return retorna a um {@see MoviePage}
+     * @return retorna com {@see MoviePage}
      */
     public static MoviePage getMovies(Context context, Order order, int page )  {
-
-
-
         String key = context.getString(R.string.api_themoviedb);
         String jsonString = null;
         try {
