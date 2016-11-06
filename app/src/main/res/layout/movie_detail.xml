@@ -71,5 +71,14 @@
         android:layout_marginBottom="14dp"
         style="@style/Widget.AppCompat.RatingBar.Indicator"/>
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_favorite_no"
+        android:id="@+id/imageButtonFavorite"
+        android:layout_alignBottom="@+id/textViewReleaseDateYear"
+        android:layout_toRightOf="@+id/imageView"
+        android:layout_toEndOf="@+id/imageView" />
+
 
 </RelativeLayout>

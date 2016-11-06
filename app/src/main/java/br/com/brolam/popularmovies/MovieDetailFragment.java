@@ -6,12 +6,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.themoviedb.api.v3.schemes.Movie;
+
+import br.com.brolam.popularmovies.models.FavoriteModel;
 
 
 /**
@@ -21,7 +24,7 @@ import org.themoviedb.api.v3.schemes.Movie;
  * @version 1.00
  * @since Release 01
  */
-public class MovieDetailFragment extends Fragment {
+public class MovieDetailFragment extends Fragment implements View.OnClickListener {
     private static final String  DEBUG_TAG = "MovieDetailFragment: ";
 
     /**
@@ -29,6 +32,7 @@ public class MovieDetailFragment extends Fragment {
      */
     public static final String MOVIE_JSON_STRING = "movie_json_string";
     private Movie movie;
+    private boolean isFavorite;
 
     public MovieDetailFragment() {}
 
@@ -43,6 +47,8 @@ public class MovieDetailFragment extends Fragment {
 
                 JSONObject jsonMovie = new JSONObject(jsonString);
                 this.movie = new Movie(jsonMovie);
+                isFavorite = FavoriteModel.existsFavoriteMovie(this.getContext(),  this.movie.getId());
+
             } catch (JSONException e) {
                 //O erro será tratado no método {@link onCreateView}
                 Log.d(DEBUG_TAG, String.format("onCreate error: %s", jsonString));
@@ -65,10 +71,35 @@ public class MovieDetailFragment extends Fragment {
             ((RatingBar) rootView.findViewById(R.id.ratingBarVoteAverage)).setRating(movie.getVoteAverageFiveStars());
             ((TextView) rootView.findViewById(R.id.textViewOverview)).setText(movie.getOverview());
             MovieHelper.requestImage(this.movie.getPosterPath(), (ImageView)rootView.findViewById(R.id.imageView));
+            ImageButton imageButtonFavorite = (ImageButton)rootView.findViewById(R.id.imageButtonFavorite);
+            setImageButtonFavorite(imageButtonFavorite);
+            imageButtonFavorite.setOnClickListener(this);
         } else {
             rootView = inflater.inflate(R.layout.movie_detail_error_message, container, false);
             ((TextView) rootView.findViewById(R.id.textViewErrorMessage)).setText(getText(R.string.error_message_unable_detail_movie));
         }
         return rootView;
+    }
+
+    private void setImageButtonFavorite(ImageButton imageButtonFavorite){
+        imageButtonFavorite.setImageResource(isFavorite?R.drawable.ic_favorite_yes:R.drawable.ic_favorite_no);
+    }
+
+    @Override
+    public void onClick(View view) {
+        if(view.getId() == R.id.imageButtonFavorite ){
+            if ( this.isFavorite){
+                FavoriteModel.deleteFavoriteMovie(this.getContext(), this.movie.getId());
+                this.isFavorite = false;
+            } else {
+                try {
+                    FavoriteModel.setFavoriteMovie(this.getContext(), this.movie);
+                    this.isFavorite = true;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            setImageButtonFavorite((ImageButton)view);
+        }
     }
 }

@@ -3,6 +3,7 @@ package br.com.brolam.popularmovies;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -11,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +23,7 @@ import org.themoviedb.api.v3.schemes.MoviePage;
 import java.util.ArrayList;
 
 import br.com.brolam.popularmovies.adapters.MoviesAdapter;
+import br.com.brolam.popularmovies.models.FavoriteModel;
 
 /**
  * A MovieListActivity é a atividade principal do aplicativo, onde será exibida uma lista e detalhes dos filmes.
@@ -33,12 +36,13 @@ import br.com.brolam.popularmovies.adapters.MoviesAdapter;
  * @version 1.00
  * @since Release 01
  */
-public class MovieListActivity extends AppCompatActivity implements MoviesAdapter.IMoviesAdapter, SwipeRefreshLayout.OnRefreshListener {
+public class MovieListActivity extends AppCompatActivity implements MoviesAdapter.IMoviesAdapter, SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
     private static final String DEBUG_TAG = "MovieHelper:";
 
     //Paramentro para armazenar a lista de filmes quando for necessário salvar a situação
     //da atividade {@see onSaveInstanceState} e {@see loadSavedInstanceState}
     private static final String SAVE_STATE_PAGE_JSON = "save_state_page_json";
+    private static final String SAVE_STATE_IS_SHOW_FAVORITE = "save_state_is_show_favorite";
 
     //Quando for necessário salvar a situação da atividade, também será armazenado o último filme
     //selecionado para que ele seja exibido quando a tela for reconstruida.
@@ -47,6 +51,9 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
     //{@see loadSavedInstanceState}
     private Movie lastMovieSelected = null;
 
+    //Informa se somente os filmes favoritos devem ser exibidos.
+    private boolean isShowFavorite = false;
+
 
     //Armazena a página recuperada na API do {@see TheMovieDb } com a lista de filmes.
     private MoviePage moviePage;
@@ -54,6 +61,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
 
     private MoviesAdapter moviesAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
+    FloatingActionButton floatingActionButton;
 
     AsyncTaskMovies asyncTaskMovies;
 
@@ -67,6 +75,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
         toolbar.setTitle(getTitle());
         this.moviePage = new MoviePage();
         this.swipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipeRefreshLayout);
+        this.floatingActionButton = (FloatingActionButton)findViewById(R.id.floatingActionButton);
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.movie_list);
 
 
@@ -86,7 +95,11 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
         if ( this.moviePage.getCurrentPage() == 0){
             onRefresh();
         }
+
+        this.floatingActionButton.setOnClickListener(this);
+        this.setFloatingActionButtonImage();
     }
+
 
 
     @Override
@@ -126,7 +139,13 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
 
     @Override
     public void onEndOfMovies() {
-        newPage(moviePage.getCurrentPage());
+        /**
+         * A verificação abaixo vai evitar que a ultima página seja recuperada mais de uma
+         * vez.
+         */
+        if ( moviePage.isEndOfPage() == false) {
+            newPage(moviePage.getCurrentPage());
+        }
     }
 
     @Override
@@ -186,6 +205,31 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
         }
     }
 
+    @Override
+    public void onClick(View view) {
+        if ( view.equals(this.floatingActionButton)){
+            if ( this.isShowFavorite){
+                this.showFavorite(false);
+            } else {
+                this.showFavorite(true);
+            }
+        }
+    }
+
+
+    private void showFavorite(boolean show) {
+        this.isShowFavorite = show;
+        this.setFloatingActionButtonImage();
+        this.lastMovieSelected = null;
+        newPage(0);
+
+    }
+
+
+    private void setFloatingActionButtonImage() {
+        this.floatingActionButton.setImageResource(this.isShowFavorite? R.drawable.ic_favorite_yes:R.drawable.ic_favorite_no);
+    }
+
     /**
      * Constrói uma nova linha de execução para acionar o {@see TheMovieDb.getMovies} e recuperar
      * uma pagina com os filmes
@@ -205,8 +249,12 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
 
         @Override
         protected MoviePage doInBackground(Void... voids) {
-            TheMovieDb.Order order = SettingsActivity.getTheMovieDbApiOrderValue(MovieListActivity.this);
-            return TheMovieDb.getMovies(MovieListActivity.this, order , currentPage + 1);
+            if ( MovieListActivity.this.isShowFavorite){
+                return FavoriteModel.getMoviePage(MovieListActivity.this);
+            } else {
+                TheMovieDb.Order order = SettingsActivity.getTheMovieDbApiOrderValue(MovieListActivity.this);
+                return TheMovieDb.getMovies(MovieListActivity.this, order, currentPage + 1);
+            }
         }
 
         @Override
@@ -248,29 +296,32 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
      * @param savedInstanceState
      */
     private void loadSavedInstanceState(Bundle savedInstanceState) {
-        if ( (savedInstanceState != null) &&  savedInstanceState.containsKey(SAVE_STATE_PAGE_JSON) ){
+        if (savedInstanceState != null) {
             try {
-                Movie movie = null;
-                this.moviePage = new MoviePage(savedInstanceState.getString(SAVE_STATE_PAGE_JSON));
-                this.moviesAdapter.update(this.moviePage.getMovies());
+                this.isShowFavorite = savedInstanceState.getBoolean(SAVE_STATE_IS_SHOW_FAVORITE, this.isShowFavorite);
+                if (savedInstanceState.containsKey(SAVE_STATE_PAGE_JSON)) {
+                    Movie movie = null;
+                    this.moviePage = new MoviePage(savedInstanceState.getString(SAVE_STATE_PAGE_JSON));
+                    this.moviesAdapter.update(this.moviePage.getMovies());
 
-                if ( savedInstanceState.containsKey(MovieDetailFragment.MOVIE_JSON_STRING) ){
-                    String jsonMovieString = savedInstanceState.getString(MovieDetailFragment.MOVIE_JSON_STRING);
-                    movie = new Movie(new JSONObject(jsonMovieString));
-                } else if ( this.moviePage.getMovies().size() > 0 ){
-                    movie = this.moviePage.getMovies().get(0);
-                }
+                    if (savedInstanceState.containsKey(MovieDetailFragment.MOVIE_JSON_STRING)) {
+                        String jsonMovieString = savedInstanceState.getString(MovieDetailFragment.MOVIE_JSON_STRING);
+                        movie = new Movie(new JSONObject(jsonMovieString));
+                    } else if (this.moviePage.getMovies().size() > 0) {
+                        movie = this.moviePage.getMovies().get(0);
+                    }
 
-                //O codigo abaixo vai atualizar o segundo painel com o detalhe do filme
-                //se o segundo painel estiver disponível.
-                if (( movie != null ) && MovieHelper.isTwoPane(this)){
-                    onMovieClick(movie);
+                    //O codigo abaixo vai atualizar o segundo painel com o detalhe do filme
+                    //se o segundo painel estiver disponível.
+                    if ((movie != null) && MovieHelper.isTwoPane(this)) {
+                        onMovieClick(movie);
+                    }
                 }
             } catch (JSONException e) {
                 //Se não for possível recuperar o objeto {@link MoviePage} será gerada uma instancia
                 //com o construtor padrão para foçar uma atualização online, {@see onCreate }
                 this.moviePage = new MoviePage();
-                Log.d(DEBUG_TAG, String.format("Load savedInstanceState error: %s", e.getMessage()) );
+                Log.d(DEBUG_TAG, String.format("Load savedInstanceState error: %s", e.getMessage()));
             }
         }
     }
@@ -285,6 +336,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         try {
+            outState.putBoolean(SAVE_STATE_IS_SHOW_FAVORITE, this.isShowFavorite);
             if (moviePage.getCurrentPage() > 0) {
                 outState.putString(SAVE_STATE_PAGE_JSON, moviePage.getJsonObject().toString());
                 if (lastMovieSelected != null) {

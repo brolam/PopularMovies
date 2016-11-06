@@ -14,6 +14,7 @@ import br.com.brolam.popularmovies.MovieHelper;
 public class Movie {
 
     //constantes para facilitar o acesso aos campos do objeto JSON com o detalhe do filme.
+    private static final String ID = "id";
     private static final String ORIGINAL_TITLE = "original_title";
     private static final String POSTER_PATH = "poster_path";
     private static final String OVERVIEW = "overview";
@@ -22,6 +23,7 @@ public class Movie {
     private static final String RELEASE_DATE_FORMAT = "yyyy-MM-dd";
 
 
+    private long id;
     private String originalTitle;
     private String posterPath;
     private String overview;
@@ -34,6 +36,7 @@ public class Movie {
      * @throws JSONException
      */
     public Movie(JSONObject jsonMovie) throws JSONException {
+        this.id = jsonMovie.getLong(ID);
         this.originalTitle = jsonMovie.getString(ORIGINAL_TITLE);
         this.posterPath = jsonMovie.getString(POSTER_PATH);
         this.overview = jsonMovie.getString(OVERVIEW);
@@ -49,12 +52,17 @@ public class Movie {
      */
     public String getJsonString() throws JSONException {
         JSONObject jsonMovie = new JSONObject();
+        jsonMovie.put(ID,this.id);
         jsonMovie.put(ORIGINAL_TITLE, this.getOriginalTitle());
         jsonMovie.put(POSTER_PATH, this.getPosterPath());
         jsonMovie.put(OVERVIEW, this.getOverview());
         jsonMovie.put(VOTE_AVERAGE, this.getVoteAverage());
         jsonMovie.put(RELEASE_DATE, MovieHelper.getDateFormatted(this.getReleaseDate(), RELEASE_DATE_FORMAT));
         return jsonMovie.toString();
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getOriginalTitle() {
