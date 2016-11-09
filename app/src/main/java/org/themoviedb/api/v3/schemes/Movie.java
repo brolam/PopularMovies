@@ -2,6 +2,8 @@ package org.themoviedb.api.v3.schemes;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.themoviedb.api.v3.schemes.base.ItemBase;
+
 import java.util.Date;
 import br.com.brolam.popularmovies.MovieHelper;
 
@@ -11,7 +13,7 @@ import br.com.brolam.popularmovies.MovieHelper;
  * @version 1.00
  * @since Release 01
  */
-public class Movie {
+public class Movie extends ItemBase {
 
     //constantes para facilitar o acesso aos campos do objeto JSON com o detalhe do filme.
     private static final String ID = "id";
@@ -36,6 +38,7 @@ public class Movie {
      * @throws JSONException
      */
     public Movie(JSONObject jsonMovie) throws JSONException {
+        super(jsonMovie);
         this.id = jsonMovie.getLong(ID);
         this.originalTitle = jsonMovie.getString(ORIGINAL_TITLE);
         this.posterPath = jsonMovie.getString(POSTER_PATH);
@@ -50,7 +53,7 @@ public class Movie {
      * @return texto no formato JSON.
      * @throws JSONException
      */
-    public String getJsonString() throws JSONException {
+    public JSONObject getJSONObject() throws JSONException {
         JSONObject jsonMovie = new JSONObject();
         jsonMovie.put(ID,this.id);
         jsonMovie.put(ORIGINAL_TITLE, this.getOriginalTitle());
@@ -58,7 +61,7 @@ public class Movie {
         jsonMovie.put(OVERVIEW, this.getOverview());
         jsonMovie.put(VOTE_AVERAGE, this.getVoteAverage());
         jsonMovie.put(RELEASE_DATE, MovieHelper.getDateFormatted(this.getReleaseDate(), RELEASE_DATE_FORMAT));
-        return jsonMovie.toString();
+        return jsonMovie;
     }
 
     public long getId() {

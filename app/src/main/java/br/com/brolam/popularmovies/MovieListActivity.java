@@ -119,7 +119,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
         try {
             if (MovieHelper.isTwoPane(this)) {
                 Bundle arguments = new Bundle();
-                arguments.putString(MovieDetailFragment.MOVIE_JSON_STRING, movie.getJsonString());
+                arguments.putString(MovieDetailFragment.MOVIE_JSON_STRING, movie.getJSONObject().toString());
                 MovieDetailFragment fragment = new MovieDetailFragment();
                 fragment.setArguments(arguments);
                 getSupportFragmentManager().beginTransaction()
@@ -127,7 +127,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
                         .commit();
             } else {
                 Intent intent = new Intent(this, MovieDetailActivity.class);
-                intent.putExtra(MovieDetailFragment.MOVIE_JSON_STRING, movie.getJsonString());
+                intent.putExtra(MovieDetailFragment.MOVIE_JSON_STRING, movie.getJSONObject().toString());
                 this.startActivity(intent);
             }
             this.lastMovieSelected = movie;
@@ -268,10 +268,10 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
                 if ( moviePage.getCurrentPage() == 1 ) {
                     MovieListActivity.this.moviePage = moviePage;
                 } else {
-                    MovieListActivity.this.moviePage.addMovies(moviePage.getCurrentPage(), moviePage.getMovies());
+                    MovieListActivity.this.moviePage.addMovies(moviePage.getCurrentPage(), moviePage.getItems());
                 }
 
-                ArrayList<Movie> movies = MovieListActivity.this.moviePage.getMovies();
+                ArrayList<Movie> movies = MovieListActivity.this.moviePage.getItems();
                 MovieListActivity.this.moviesAdapter.update(movies);
                 //Se o painel do detalhes estiver disponível, o código abaixo
                 //vai tentar exibir o detalhe do ultimo filme selecionado.
@@ -302,13 +302,13 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
                 if (savedInstanceState.containsKey(SAVE_STATE_PAGE_JSON)) {
                     Movie movie = null;
                     this.moviePage = new MoviePage(savedInstanceState.getString(SAVE_STATE_PAGE_JSON));
-                    this.moviesAdapter.update(this.moviePage.getMovies());
+                    this.moviesAdapter.update(this.moviePage.getItems());
 
                     if (savedInstanceState.containsKey(MovieDetailFragment.MOVIE_JSON_STRING)) {
                         String jsonMovieString = savedInstanceState.getString(MovieDetailFragment.MOVIE_JSON_STRING);
                         movie = new Movie(new JSONObject(jsonMovieString));
-                    } else if (this.moviePage.getMovies().size() > 0) {
-                        movie = this.moviePage.getMovies().get(0);
+                    } else if (this.moviePage.getItems().size() > 0) {
+                        movie = this.moviePage.getItems().get(0);
                     }
 
                     //O codigo abaixo vai atualizar o segundo painel com o detalhe do filme
@@ -340,7 +340,7 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
             if (moviePage.getCurrentPage() > 0) {
                 outState.putString(SAVE_STATE_PAGE_JSON, moviePage.getJsonObject().toString());
                 if (lastMovieSelected != null) {
-                    outState.putString(MovieDetailFragment.MOVIE_JSON_STRING, lastMovieSelected.getJsonString());
+                    outState.putString(MovieDetailFragment.MOVIE_JSON_STRING, lastMovieSelected.getJSONObject().toString());
                 }
             }
         } catch (JSONException e) {

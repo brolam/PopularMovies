@@ -179,7 +179,7 @@ public class FavoriteModel {
         try {
 
             ContentValues favoriteMovieValues = new ContentValues();
-            favoriteMovieValues.put(Fields.MOVIE_JSON_STRING, movie.getJsonString());
+            favoriteMovieValues.put(Fields.MOVIE_JSON_STRING, movie.getJSONObject().toString());
             favoriteMovieValues.put(Fields.CREATE_DATE, new Date().getTime());
 
             if (existsFavoriteMovie(sqLiteDatabase, movie.getId())) {
