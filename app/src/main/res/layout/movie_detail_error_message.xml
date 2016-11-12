@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -5,20 +6,18 @@
     style="?android:attr/textAppearanceLarge"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="br.com.brolam.popularmovies.MovieDetailFragment"
+    android:paddingBottom="@dimen/text_margin"
     android:paddingLeft="@dimen/horizontal_margin"
     android:paddingRight="@dimen/horizontal_margin"
     android:paddingTop="@dimen/text_margin"
-    android:paddingBottom="@dimen/text_margin">
+    tools:context="br.com.brolam.popularmovies.fragments.MovieDetailFragment">
 
     <TextView
         android:id="@+id/textViewErrorMessage"
-        android:text="TextView"
+        style="@style/error_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="@style/error_message"
         android:layout_gravity="center_vertical"
-        android:textAlignment="center"
-    />
-
+        android:text="TextView"
+        android:textAlignment="center" />
 </LinearLayout>

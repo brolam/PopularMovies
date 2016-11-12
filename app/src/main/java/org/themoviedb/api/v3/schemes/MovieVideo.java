@@ -11,6 +11,7 @@ import org.themoviedb.api.v3.schemes.base.ItemBase;
  * @since Release 03
  */
 public class MovieVideo extends ItemBase {
+    private final String URL_PLAY_FORMAT = "https://www.youtube.com/watch?v=%s";
 
     //constantes para facilitar o acesso aos campos do objeto JSON.
     private static final String ID = "id";
@@ -74,4 +75,9 @@ public class MovieVideo extends ItemBase {
     public String getKey() {
         return key;
     }
+
+    public String getUrlPlay(){
+        return String.format(URL_PLAY_FORMAT, getKey());
+    }
+
 }

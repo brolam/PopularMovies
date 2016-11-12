@@ -1,84 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/movie_detail"
     style="?android:attr/textAppearanceLarge"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="br.com.brolam.popularmovies.MovieDetailFragment"
+    android:paddingBottom="@dimen/text_margin"
     android:paddingLeft="@dimen/horizontal_margin"
     android:paddingRight="@dimen/horizontal_margin"
-    android:paddingTop="@dimen/text_margin"
-    android:paddingBottom="@dimen/text_margin">
-
+    android:paddingTop="@dimen/text_margin">
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="140dp"
         android:layout_height="200dp"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        app:srcCompat="@mipmap/ic_launcher"
+        android:layout_alignParentTop="true"
         android:scaleType="fitXY"
-        android:id="@+id/imageView"
-        />
+        app:srcCompat="@mipmap/ic_launcher" />
+
+    <ImageButton
+        android:id="@+id/imageButtonFavorite"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textViewReleaseDateYear"
+        android:layout_toEndOf="@+id/imageView"
+        android:layout_toRightOf="@+id/imageView"
+        app:srcCompat="@drawable/ic_favorite_no" />
 
     <TextView
         android:id="@+id/textViewReleaseDateYear"
-        android:text="TextView"
+        style="@style/TextBig"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerHorizontal="true"
-        style="@style/TextBig"/>
+        android:text="TextView" />
 
     <TextView
         android:id="@+id/textViewReleaseDateDayMonth"
-        android:text="TextView"
+        style="@style/TextSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textViewReleaseDateYear"
         android:layout_alignParentRight="true"
+        android:layout_below="@+id/textViewReleaseDateYear"
         android:layout_marginTop="8dp"
-        style="@style/TextSmall"/>
+        android:text="TextView" />
 
 
     <TextView
         android:id="@+id/textViewOriginalTitle"
-        android:text="TextView"
+        style="@style/TextNormal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/imageView"
         android:layout_marginTop="16dp"
-        style="@style/TextNormal"/>
+        android:text="TextView" />
 
-    <TextView
-        android:id="@+id/textViewOverview"
-        android:text="TextView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@+id/textViewOriginalTitle"
-        android:layout_marginTop="8dp" />
 
     <RatingBar
         android:id="@+id/ratingBarVoteAverage"
+        style="@style/Widget.AppCompat.RatingBar.Indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:isIndicator="true"
-        android:numStars="5"
         android:layout_alignBottom="@+id/imageView"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_marginBottom="14dp"
-        style="@style/Widget.AppCompat.RatingBar.Indicator"/>
+        android:isIndicator="true"
+        android:numStars="5" />
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_favorite_no"
-        android:id="@+id/imageButtonFavorite"
-        android:layout_alignBottom="@+id/textViewReleaseDateYear"
-        android:layout_toRightOf="@+id/imageView"
-        android:layout_toEndOf="@+id/imageView" />
+    <LinearLayout
+        android:id="@+id/frameLayout_sub_detail"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/textViewOriginalTitle"
+        android:minHeight="@dimen/sub_detail_min_height">
 
+        <include layout="@layout/movie_sub_detail" />
+    </LinearLayout>
 
 </RelativeLayout>
+
+
+

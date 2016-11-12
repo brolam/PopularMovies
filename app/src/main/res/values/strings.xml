@@ -18,7 +18,10 @@
     <string name="pref_list_themoviedb_api_order_title">Movies order</string>
     <string name="pref_list_themoviedb_api_order_popular_title">Order by Popular</string>
     <string name="pref_list_themoviedb_api_order_top_rated_title">Order by Top Rated</string>
-
+    <string name="movie_sub_detail_overview_title">Overview</string>
+    <string name="movie_sub_detail_videos_title">Videos</string>
+    <string name="movie_sub_detail_reviews_title">Reviews</string>
+    <string name="error_can_not_setting_movie_favorite">Can not setting the movie with favorite!</string>
 
 
 </resources>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/viewPager_sub_detail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="@dimen/text_margin"
+    android:paddingTop="@dimen/text_margin">
+
+    <TextView
+        android:id="@+id/textViewOverview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        android:text="TextView" />
+
+</ScrollView>

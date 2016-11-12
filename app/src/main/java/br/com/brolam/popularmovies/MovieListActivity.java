@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,6 +24,7 @@ import org.themoviedb.api.v3.schemes.MoviePage;
 import java.util.ArrayList;
 
 import br.com.brolam.popularmovies.adapters.MoviesAdapter;
+import br.com.brolam.popularmovies.fragments.MovieDetailFragment;
 import br.com.brolam.popularmovies.models.FavoriteModel;
 
 /**
@@ -78,10 +80,11 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
         this.floatingActionButton = (FloatingActionButton)findViewById(R.id.floatingActionButton);
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.movie_list);
 
+        //O cógido abaixo calcula conforme a largura da tela o número de colunas do GridLayoutManager
+        int gridColumns = MovieHelper.isTwoPane(this)? 3 : MovieHelper.calculateNoOfColumns(this.getBaseContext(), 180);
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, gridColumns);
 
         this.moviesAdapter = new MoviesAdapter(this);
-        //Gerar um grid com duas colunas ou três conforme o tamanho da tela.
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, MovieHelper.isTwoPane(this)?3:2);
         recyclerView.setAdapter(moviesAdapter);
         recyclerView.setLayoutManager(gridLayoutManager);
 
@@ -118,6 +121,11 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
     public void onMovieClick(Movie movie) {
         try {
             if (MovieHelper.isTwoPane(this)) {
+                NestedScrollView nestedScrollView_detail  = (NestedScrollView) this.findViewById(R.id.nestedScrollView_detail);
+                if ( nestedScrollView_detail != null){
+                    nestedScrollView_detail.scrollTo(0,0);
+                }
+
                 Bundle arguments = new Bundle();
                 arguments.putString(MovieDetailFragment.MOVIE_JSON_STRING, movie.getJSONObject().toString());
                 MovieDetailFragment fragment = new MovieDetailFragment();
@@ -217,6 +225,10 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
     }
 
 
+    /**
+     * Exibe ou cancela a lista de filmes favoritos.
+     * @param show informar verdadeiro para exibi os filmes.
+     */
     private void showFavorite(boolean show) {
         this.isShowFavorite = show;
         this.setFloatingActionButtonImage();
@@ -276,7 +288,11 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
                 //Se o painel do detalhes estiver disponível, o código abaixo
                 //vai tentar exibir o detalhe do ultimo filme selecionado.
                 if ( MovieHelper.isTwoPane(MovieListActivity.this) && (movies.size() > 0)) {
-                    onMovieClick(movies.get(0));
+                    if ( lastMovieSelected  != null){
+                        onMovieClick(lastMovieSelected);
+                    } else {
+                        onMovieClick(movies.get(0));
+                    }
                 }
             } else {
                 Toast.makeText(MovieListActivity.this, moviePage.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -345,6 +361,18 @@ public class MovieListActivity extends AppCompatActivity implements MoviesAdapte
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        //A funcionalidade de exibição dos filmes favoritos gera uma sensação de
+        //uma nova tela para o usuário, sendo assim, ao clicar no botão voltar do Android
+        //primeiro será cancelada a exibição dos filmes favoritos antes de sair do app.
+        if ( isShowFavorite ){
+            showFavorite(false);
+        } else {
+            super.onBackPressed();
         }
     }
 }

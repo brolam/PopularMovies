@@ -3,6 +3,7 @@ package br.com.brolam.popularmovies;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
@@ -148,6 +149,23 @@ public class MovieHelper {
         Context context = imageView.getContext();
         String imageUrl = String.format("http://image.tmdb.org/t/p/w185/%s", imageName);
         Picasso.with(context).load(imageUrl).into(imageView);
+    }
+
+    /**
+     * Calcula o número de colunas considerando a largura da tela em DPI vs. a largura de um item informado no
+     * paramentro {@see widthItem }.
+     * Essa funcionalidade ajuda a calcular o número de colunas em um {@see GridlayoutManager}.
+     * Para mais detalhes, por favor veja o link abaixo:
+     * http://stackoverflow.com/questions/33575731/gridlayoutmanager-how-to-auto-fit-columns
+     * @param context informar um contexto válido
+     * @param widthItem informar largura(Width) do item em DPI - Density-independent pixel
+     * @return número de colunas proporcional ao tamanho a largura da tela.
+     */
+    public static int calculateNoOfColumns(Context context, int widthItem) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        int noOfColumns = (int) (dpWidth / widthItem);
+        return noOfColumns;
     }
 
 }

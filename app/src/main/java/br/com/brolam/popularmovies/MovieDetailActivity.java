@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import br.com.brolam.popularmovies.fragments.MovieDetailFragment;
+
 /**
  * A MovieDetailActivity exibe o detalhe do filme somente para telas até 820dp.
  * @see MovieListActivity
